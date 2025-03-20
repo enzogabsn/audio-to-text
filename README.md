@@ -28,3 +28,7 @@ Agora basta você executar o arquivo python e ele vai transcrever os áudios par
 - Ter a extensão do Visual Studio Code de Python, basta pesquisar Python e baixar a primeira opção da Microsoft
 - Ter uma pasta de destino para os áudios
 - Ter uma pasta de destino para os textos
+
+Caso queira saber mais sobre o projeto, você pode ver a minha documentação do projeto, ensinando passo a passo todo o código.
+
+**Ass: Enzin Coda**
