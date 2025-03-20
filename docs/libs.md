@@ -1,6 +1,6 @@
 # Bibliotecas necessárias
 
-Para você baixar as bibliotecas necessárias para executar, você deve primeiramente o Python instalado. Para baixar, [clique aqui](https://www.python.org/downloads/) ou pesquise https://www.python.org/downloads/.
+Para você baixar as bibliotecas necessárias para executar, você deve primeiramente o Python instalado. Para baixar, [clique aqui](https://www.python.org/downloads/) ou pesquise https://www.python.org/downloads/, e recomendo que baixe a versão mais recente.
 
 Agora com o Python instalado, aperte o botão **Windows** e pesquise por cmd e aperte Enter. Assim, você vai abrir o terminal. Agora, digite os seguintes comandos para baixar as bibliotecas:
 
