@@ -28,6 +28,7 @@ Agora basta você executar o arquivo python e ele vai transcrever os áudios par
 - Ter a extensão do Visual Studio Code de Python, basta pesquisar Python e baixar a primeira opção da Microsoft
 - Ter uma pasta de destino para os áudios
 - Ter uma pasta de destino para os textos
+- Ter as bibliotecas **os, speech_cognition, openai** e **dotenv** instaladas. Leia [docs/libs](https://github.com/enzogabsn/audio-to-text/blob/main/docs/libs.md) para você ver como instalá-las
 
 Caso queira saber mais sobre o projeto, você pode ver a minha documentação do projeto, ensinando passo a passo todo o código.
 
