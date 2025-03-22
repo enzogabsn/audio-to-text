@@ -2,16 +2,16 @@ import os
 import speech_recognition as sr
 from openai import OpenAI
 from dotenv import load_dotenv
+from config import INPUT_FOLDER, OUTPUT_FOLDER
+from audio_processor import AudioProcessor
+from text_processor import TextProcessor
+from file_manager import FileManager
 
 # Carrega variáveis de ambiente do arquivo .env (contendo OPENAI_API_KEY)
 load_dotenv()
 
 # Inicializa o cliente OpenAI com a chave da API
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# Caminhos
-INPUT_FOLDER = r"C:/CAMINHO/DA/SUA/PASTA/DE/AUDIOS"
-OUTPUT_FOLDER = r"C:/CAMINHO/DA/SUA/PASTA/DE/TEXTOS"
 
 # Cria a pasta de saída se não existir
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -21,7 +21,7 @@ def reescrever_chatgpt(texto_original: str, nome_arquivo_sem_extensao: str, nome
     Pede ao ChatGPT para, mesmo que o texto pareça correto,
     adicionar pontuação, separar em parágrafos bem definidos,
     incluir o nome da pasta e do arquivo no topo no formato "# Nome da pasta - Nome do arquivo Texto da IA"
-    
+
     Args:
         texto_original: O texto a ser reescrito
         nome_arquivo_sem_extensao: O nome do arquivo de áudio sem a extensão
@@ -36,7 +36,7 @@ def reescrever_chatgpt(texto_original: str, nome_arquivo_sem_extensao: str, nome
         f"Comece o texto com a linha '# {nome_pasta} - {nome_arquivo_sem_extensao} Texto Final Revisado', "
         "sem nenhuma linha adicional antes desse título. "
         "Exemplo de formatação desejada:\n\n"
-        f"# {nome_pasta} - {nome_arquivo_sem_extensao} Texto Final Revisado\n\n"
+        f"# {nome_pasta} - {nome_arquivo_sem_extensao}\n\n"
         "Este é o primeiro parágrafo com várias frases. "
         "Cada frase tem pontuação adequada. "
         "O parágrafo termina com um ponto final.\n\n"
@@ -72,12 +72,12 @@ def reescrever_chatgpt(texto_original: str, nome_arquivo_sem_extensao: str, nome
         # A estrutura da resposta é diferente na nova API
         texto_reescrito = resposta.choices[0].message.content.strip()
 
-        print("[DEBUG] Resposta do ChatGPT:\n", texto_reescrito, "\n")
+        print("[DEBUG] ChatGPT concluiu o processo com sucesso.")
         return texto_reescrito
     except Exception as e:
         print(f"[ERRO] Falha ao chamar a API do ChatGPT: {e}")
         # Em caso de erro, retorna um texto formatado manualmente com o nome da pasta e do arquivo
-        return f"# {nome_pasta} - {nome_arquivo_sem_extensao} Texto Final Revisado\n\n{texto_original}"
+        return f"# {nome_pasta} - {nome_arquivo_sem_extensao}\n\n{texto_original}"
 
 
 def processar_arquivo_audio(audio_path, output_folder):
@@ -162,6 +162,7 @@ def percorrer_pastas_recursivamente(input_folder, output_folder):
         input_folder: Pasta de entrada a ser percorrida
         output_folder: Pasta de saída para os arquivos de texto
     """
+    
     arquivos_wav_encontrados = False
     
     # Percorre arquivos e pastas no diretório atual
@@ -219,5 +220,66 @@ def executar_fluxo():
         print("[AVISO] Nenhum arquivo WAV foi encontrado em nenhuma pasta!")
 
 
+class AudioTextConverter:
+    def __init__(self):
+        self.audio_processor = AudioProcessor()
+        self.text_processor = TextProcessor()
+        self.file_manager = FileManager()
+
+    def process_audio_file(self, audio_path: str) -> None:
+        """
+        Processa um único arquivo de áudio.
+
+        Args:
+            audio_path: Caminho do arquivo de áudio
+        """
+        # Obtém informações do arquivo
+        base_name, parent_folder = self.file_manager.get_file_info(audio_path)
+        output_path = self.file_manager.get_output_path(audio_path, INPUT_FOLDER, OUTPUT_FOLDER)
+
+        print(f"[INFO] Processando arquivo: {audio_path}")
+
+        # Transcreve o áudio
+        texto_bruto = self.audio_processor.transcribe_audio(audio_path)
+
+        # Salva a transcrição bruta
+        self.file_manager.save_text(texto_bruto, output_path)
+
+        # Reescreve o texto usando GPT
+        texto_reescrito = self.text_processor.rewrite_text(texto_bruto, base_name, parent_folder)
+
+        # Mostra comparação
+        print("\n------ COMPARAÇÃO DE TEXTO ------")
+        print("ORIGINAL:\n", texto_bruto)
+        print("\nREESCRITO:\n", texto_reescrito)
+        print("---------------------------------\n")
+
+        # Salva o texto reescrito
+        self.file_manager.save_text(texto_reescrito, output_path)
+
+    def process_all_files(self) -> None:
+        """Processa todos os arquivos WAV encontrados."""
+        print(f"[INFO] Iniciando processamento em: {INPUT_FOLDER}")
+        
+        # Encontra todos os arquivos WAV
+        wav_files = self.file_manager.find_wav_files(INPUT_FOLDER)
+        
+        if not wav_files:
+            print("[AVISO] Nenhum arquivo WAV encontrado!")
+            return
+
+        # Processa cada arquivo
+        for audio_path in wav_files:
+            self.process_audio_file(audio_path)
+
+        print("[INFO] Processamento concluído com sucesso!")
+
+
+def main():
+    """Função principal do programa."""
+    converter = AudioTextConverter()
+    converter.process_all_files()
+
+
 if __name__ == "__main__":
-    executar_fluxo()
+    main()
