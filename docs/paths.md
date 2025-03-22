@@ -20,6 +20,6 @@ INPUT_FOLDER = r"C:/SUA/PASTA/DE/AUDIOS"
 OUTPUT_FOLDER = r"C:/SUA/PASTA/ONDE/IRÁ/OS/TEXTOS/TRANSCREVIDOS"
 ```
 
-No caso, é só você colocar o caminho dos áudios e onde vai ficar os textos.
+No caso, é só você colocar o caminho dos áudios em `INPUT_FOLDER` e onde vai ficar os textos em `OUTPUT_FOLDER`, entre as aspas duplas.
 
 **Ass: Enzin Coda**
